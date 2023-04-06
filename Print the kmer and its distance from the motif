@@ -1,0 +1,46 @@
+# Define a function to calculate the total distance between a motif and a kmer
+def total_distance(motif, kmer):
+    # Get the length of the kmer
+    k = len(kmer)
+    # Initialize the distance to 0
+    distance = 0
+    # Iterate through each position in the kmer
+    for i in range(k):
+        # Create a list of characters at the i-th position of each string in the motif
+        column = [motif[j][i] for j in range(len(motif))]
+        # Add the Hamming distance between the kmer at the i-th position and each character in the column
+        distance += sum(1 for c in column if c != kmer[i])
+    # Return the total distance
+    return distance
+
+# Define the motif as a list of strings
+motif = [
+    "CTCGATGAGTAGGAAAGTAGTTTCACTGGGCGAACCACCCCGGCGCTAATCCTAGTGCCC",
+    "GCAATCCTACCCGAGGCCACATATCAGTAGGAACTAGAACCACCACGGGTGGCTAGTTTC",
+    "GGTGTTGAACCACGGGGTTAGTTTCATCTATTGTAGGAATCGGCTTCAAATCCTACACAG"
+]
+
+# Define a list of kmers to compare against the motif
+kmers = [
+    "ATAACGG",
+    "CGTGTAA",
+    "TAGTTTC",
+    "GATGAGT",
+    "GTAGGAA",
+    "TCTGAAG"
+]
+
+# Iterate through each kmer and calculate its distance from the motif
+for kmer in kmers:
+    distance = total_distance(motif, kmer)
+    # Print the kmer and its distance from the motif
+    print(kmer, distance)
+
+
+#output
+ATAACGG 16
+CGTGTAA 14
+TAGTTTC 16
+GATGAGT 15
+GTAGGAA 15
+TCTGAAG 14
