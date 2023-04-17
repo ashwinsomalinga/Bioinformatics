@@ -1,0 +1,67 @@
+import random
+
+def profile_most_probable_kmer(text, k, profile):
+    """
+    Returns the most probable k-mer in the given text based on the given profile.
+    """
+    max_prob = -1
+    most_probable_kmer = ""
+    # Loop through all possible k-mers in the text
+    for i in range(len(text) - k + 1):
+        kmer = text[i:i+k]
+        prob = 1
+        # Calculate the probability of the k-mer based on the profile
+        for j in range(k):
+            prob *= profile[kmer[j]][j]
+        # Update the most probable k-mer if the current probability is higher
+        if prob > max_prob:
+            max_prob = prob
+            most_probable_kmer = kmer
+    return most_probable_kmer
+
+def create_profile_from_motifs(motifs):
+    """
+    Returns the profile of the given motifs.
+    """
+    k = len(motifs[0])
+    profile = {'A': [0] * k, 'C': [0] * k, 'G': [0] * k, 'T': [0] * k}
+    # Loop through all motifs and update the profile
+    for motif in motifs:
+        for i in range(k):
+            profile[motif[i]][i] += 1 / len(motifs)  # Add the frequency of the motif at each position
+    return profile
+
+def randomized_motif_search(dna, k, t):
+    """
+    Returns a collection of best motifs resulting from running RandomizedMotifSearch
+    on the given DNA strings with the given k and t parameters.
+    """
+    best_motifs = [text[:k] for text in dna]  # Initialize the best motifs with the first k-mers from each DNA string
+    n = len(dna[0])
+    for _ in range(1000):  # Perform 1000 iterations of the algorithm
+        motifs = []
+        # Loop through all DNA strings and generate motifs based on the current profile
+        for text in dna:
+            profile = create_profile_from_motifs(best_motifs)
+            motif = profile_most_probable_kmer(text, k, profile)
+            motifs.append(motif)
+        # Update the best motifs if the new motifs are better (i.e., less diverse)
+        if len(set(motifs)) < len(set(best_motifs)):
+            best_motifs = motifs
+    return best_motifs
+
+# Example usage
+k = 8
+t = 5
+dna = [
+    "CGCCCCTCTCGGGGGTGTTCAGTAAACGGCCA",
+    "GGGCGAGGTATGTGTAAGTGCCAAGGTGCCAG",
+    "TAGTACCGAGACCGAAAGAAGTATACAGGCGT",
+    "TAGATCAAGTTTCAGGTGCACGTCGGTGAACC",
+    "AATCCACCAGCTCCACGTGCAATGTTGGCCTA"
+]
+
+best_motifs = randomized_motif_search(dna, k, t)
+print("Best Motifs:")
+for motif in best_motifs:
+    print(motif)
