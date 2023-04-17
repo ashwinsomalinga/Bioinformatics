@@ -1,0 +1,14 @@
+def generate_list_from_string(input_str):
+    # Split the input string by spaces
+    values = input_str.split()
+
+    # Create a list from the list of values
+    value_list = list(values)
+
+    return value_list
+
+
+input_str = "CGCCCCTCTCGGGGGTGTTCAGTAAACGGCCA GGGCGAGGTATGTGTAAGTGCCAAGGTGCCAG TAGTACCGAGACCGAAAGAAGTATACAGGCGT TAGATCAAGTTTCAGGTGCACGTCGGTGAACC AATCCACCAGCTCCACGTGCAATGTTGGCCTA"
+
+result_list = generate_list_from_string(input_str)
+print("Generated List:", result_list)
