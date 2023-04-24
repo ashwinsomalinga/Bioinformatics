@@ -1,0 +1,79 @@
+import random
+
+def profile_most_probable_kmer(text, k, profile):
+    max_p = -1
+    most_probable = ""
+    for i in range(len(text) - k + 1):
+        kmer = text[i:i+k]
+        p = probability(profile, kmer)
+        if p > max_p:
+            max_p = p
+            most_probable = kmer
+    return most_probable
+
+def probability(profile, pattern):
+    p = 1
+    for i, nucleotide in enumerate(pattern):
+        p *= profile[nucleotide][i]
+    return p
+
+def profile_with_pseudocounts(motifs):
+    t = len(motifs)
+    k = len(motifs[0])
+    profile = { 'A': [1]*k, 'C': [1]*k, 'G': [1]*k, 'T': [1]*k }
+    for i in range(t):
+        for j in range(k):
+            nucleotide = motifs[i][j]
+            profile[nucleotide][j] += 1
+    for nucleotide in profile:
+        for j in range(k):
+            profile[nucleotide][j] /= t + 4
+    return profile
+
+def score(motifs):
+    consensus = ""
+    k = len(motifs[0])
+    t = len(motifs)
+    score = 0
+    for j in range(k):
+        counts = { 'A': 0, 'C': 0, 'G': 0, 'T': 0 }
+        for i in range(t):
+            nucleotide = motifs[i][j]
+            counts[nucleotide] += 1
+        consensus += max(counts, key=counts.get)
+        score += t - counts[max(counts, key=counts.get)]
+    return score
+
+def randomly_select_kmers(dna, k, t):
+    return [dna[i][j:j+k] for i in range(t) for j in [random.randint(0, len(dna[0]) - k)]]
+
+def GibbsSampler(dna, k, t, N):
+    motifs = randomly_select_kmers(dna, k, t)
+    best_motifs = motifs
+    for j in range(N):
+        i = random.randint(0, t - 1)
+        motifs_without_i = motifs[:i] + motifs[i+1:]
+        profile = profile_with_pseudocounts(motifs_without_i)
+        motifs[i] = profile_most_probable_kmer(dna[i], k, profile)
+        if score(motifs) < score(best_motifs):
+            best_motifs = motifs
+    return best_motifs
+
+# example usage
+dna = ['CGCCCCTCTCGGGGGTGTTCAGTAAACGGCCA',
+       'GGGCGAGGTATGTGTAAGTGCCAAGGTGCCAG',
+       'TAGTACCGAGACCGAAAGAAGTATACAGGCGT',
+       'TAGATCAAGTTTCAGGTGCACGTCGGTGAACC',
+       'AATCCACCAGCTCCACGTGCAATGTTGGCCTA']
+k = 8
+t = 5
+N = 100
+best_score = float('inf')
+for i in range(20):
+    motifs = GibbsSampler(dna, k, t, N)
+    s = score(motifs)
+    if s < best_score:
+        best_motifs = motifs
+        best_score = s
+print(" ".join(best_motifs))
+
