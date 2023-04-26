@@ -1,0 +1,22 @@
+def pattern_count(pattern, text):
+    count = 0  # Number of matches of Text in Pattern
+    for i in range(len(text) - len(pattern) + 1):
+        if text[i:i+len(pattern)] == pattern:
+            count += 1
+    return count
+
+
+if __name__ == '__main__':
+   text = "GATCCAGATCCCCATAC"
+   text_len = len(text)
+   for pattern_length in range(2,1+int(text_len / 2)):
+       max_kmer_count: int = 0  # Initialize maximum k-mer count
+       max_kmer: str  = ""  # Initialize the maximum k-mer pattern
+       for i in range(text_len - pattern_length + 1):
+           pattern: str = text[i:i+pattern_length]  # Next k-mer
+           count = pattern_count(pattern, text)  # How many k-mers?
+           if count > max_kmer_count:
+               max_kmer_count = count
+               max_kmer = pattern
+
+       print(f"The maximum k-mer '{max_kmer}' count is {max_kmer_count}")
