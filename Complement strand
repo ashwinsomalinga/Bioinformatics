@@ -1,0 +1,8 @@
+# Input:  A DNA string Pattern
+# Output: The complementary string of Pattern (with every nucleotide replaced by its complement).
+def Complement(Pattern):
+    # your code here
+    complements = {"A":"T", "T":"A", "G":"C", "C":"G"}
+    nucleotides = [complements[nucleo] for nucleo in Pattern]
+    return "".join(nucleotides)
+
