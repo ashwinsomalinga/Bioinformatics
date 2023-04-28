@@ -1,0 +1,18 @@
+# Input:  A DNA string Pattern
+# Output: The reverse complement of Pattern
+def ReverseComplement(Pattern):   
+    # your code here
+    return Complement(Reverse(Pattern))
+
+# Copy your Reverse() function here.
+def Reverse(Pattern):
+    # your code here
+    reversed_Pattern=Pattern[::-1]
+    return reversed_Pattern
+
+# Copy your Complement() function here.
+def Complement(Pattern):
+    # your code here
+    complements = {"A":"T", "T":"A", "G":"C", "C":"G"}
+    nucleotides = [complements[nucleo] for nucleo in Pattern]
+    return "".join(nucleotides)
