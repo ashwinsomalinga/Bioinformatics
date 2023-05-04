@@ -1,0 +1,23 @@
+# Insert your Pr(text, profile) function here from Motifs.py.
+def Probability(Text, Profile):
+    probability = 1
+    k = len(Text)
+    for i in range(k):
+        probability *= Profile[Text[i]][i]
+    return probability
+
+# Write your ProfileMostProbableKmer() function here.
+# The profile matrix assumes that the first row corresponds to A, the second corresponds to C,
+# the third corresponds to G, and the fourth corresponds to T.
+# You should represent the profile matrix as a dictionary whose keys are 'A', 'C', 'G', and 'T' and whose values are lists of floats
+def ProfileMostProbableKmer(Text, k, Profile):
+    max_probability = 0
+    most_probable = Text[:k]
+    n = len(Text)
+    for i in range(n - k + 1):
+        kmer = Text[i: i + k]
+        probability = Probability(kmer, Profile)
+        if probability > max_probability:
+            max_probability = probability
+            most_probable = kmer
+    return most_probable
