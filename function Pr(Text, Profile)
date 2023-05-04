@@ -1,0 +1,11 @@
+# Input:  String Text and profile matrix Profile
+# Output: Pr(Text, Profile)
+def Pr(Text, Profile):
+    # insert your code here
+    running_product = 1
+    for index, nucleotide in enumerate(Text):
+        running_product *= Profile[nucleotide][index]
+    return running_product
+
+
+
