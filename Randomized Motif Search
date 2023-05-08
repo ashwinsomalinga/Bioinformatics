@@ -1,0 +1,26 @@
+# Input:  A profile matrix Profile and a list of strings Dna
+# Output: Motifs(Profile, Dna)
+def Motifs(Profile, Dna):
+    # insert your code here
+    motifs = []
+    a = len (Dna)
+    k = 4
+    for j in range (a):
+        motifs.append(ProfileMostProbablePattern(Dna[j], k, Profile))
+    return motifs
+
+# Insert your ProfileMostProbablePattern(Text, k, Profile) and Pr(Pattern, Profile) functions here.
+def Pr(Text, profile):
+    p = 1
+    for i in range(len(Text)):
+        p *= profile[Text[i]][i]
+    return p
+
+def ProfileMostProbablePattern(Text, k, Profile):
+    most_prob = Text[0:k] 
+    p_max = Pr(Text[0:k], Profile)
+    for i in range(1, len(Text) - k + 1):
+         if Pr(Text[i:i+k], Profile) > p_max:
+                p_max = Pr(Text[i:i+k], Profile)
+                most_prob = Text[i:i+k]        
+    return most_prob
