@@ -1,0 +1,113 @@
+# Input:  A list of kmers Dna, and integers k and t (where t is the number of kmers in Dna)
+# Output: GreedyMotifSearch(Dna, k, t)
+def GreedyMotifSearchWithPseudocounts(Dna, k, t):
+    BestMotifs = [] # output variable
+    for i in range(0, t):
+        BestMotifs.append(Dna[i][0:k])
+    n = len(Dna[0])
+    for m in range(n-k+1):
+        Motifs = []
+        Motifs.append(Dna[0][m:m+k])
+        for j in range(1, t):
+            P = ProfileWithPseudocounts(Motifs[0:j])
+            Motifs.append(ProfileMostProbablePattern(Dna[j], k, P))
+        if Score(Motifs) < Score(BestMotifs):
+            BestMotifs = Motifs
+    return BestMotifs
+       
+def Score(Motifs):
+    score = 0
+    consensus = Consensus(Motifs)
+    k = len(consensus)
+    for j in range(len(Motifs)):
+        for symbol in range(k):
+            if Motifs[j][symbol] != consensus[symbol]:
+                score += 1
+    return score
+
+def CountWithPseudocounts(Motifs):
+    count = {} 
+    k = len(Motifs[0])
+    for symbol in "ACGT":
+        count[symbol] = []
+        for j in range(k):
+             count[symbol].append(1)
+    t = len(Motifs)
+    
+    #Explanation:
+    The function GreedyMotifSearchWithPseudocounts takes three arguments as input:
+
+A list of DNA sequences Dna
+An integer k specifying the length of the motifs to search for
+An integer t specifying the number of DNA sequences in the list
+The function initializes the BestMotifs list to be an empty list, and then appends the first k nucleotides from each of the t DNA sequences in Dna to the BestMotifs list.
+
+The function then loops through all possible starting positions of a k-length substring in the first DNA sequence in Dna. It then initializes the Motifs list to be a list containing this substring.
+
+Next, the function loops through the remaining t-1 DNA sequences in Dna, and for each sequence, it uses the ProfileMostProbablePattern function to find the most probable k-length substring based on the previously selected motifs. The ProfileMostProbablePattern function uses the ProfileWithPseudocounts function to calculate a probability profile for the current set of motifs and the Pr function to calculate the probability of a given k-length substring in the current sequence based on the probability profile.
+
+Once all the motifs have been selected, the function calculates the score of the current set of motifs using the Score function, and if the score is lower than the score of the current best set of motifs stored in BestMotifs, it replaces BestMotifs with the current set of motifs.
+
+Finally, the function returns the BestMotifs list.
+
+The Score function takes a list of motifs as input and calculates the score of the motifs based on their consensus. The consensus is calculated using the Consensus function, which takes the same list of motifs as input and returns the consensus sequence.
+
+The CountWithPseudocounts function takes a list of motifs as input and returns a count matrix with pseudocounts for each nucleotide at each position in the motifs. The pseudocounts are added to avoid a probability of zero in the probability profile calculation.
+
+The ProfileWithPseudocounts function takes a list of motifs as input and returns a probability profile with pseudocounts for each nucleotide at each position in the motifs. The pseudocounts are added to avoid a probability of zero in the probability profile calculation.
+
+The Consensus function takes a list of motifs as input and returns the consensus sequence, which is the nucleotide at each position that occurs most frequently in the motifs.
+
+Finally, the Pr function takes a sequence and a probability profile as input and calculates the probability of the sequence based on the probability profile.
+
+The ProfileMostProbablePattern function takes a sequence, a motif length, and a probability profile as input, and returns the k-length substring of the sequence that has the highest probability of occurring based on the probability profile. It loops through all possible k-length substrings of the input sequence, calculates the probability of each substring using the Pr function, and returns the substring with the highest probability.
+    for i in range(t):
+        for j in range(k):
+            symbol = Motifs[i][j]
+            count[symbol][j] += 1
+    return count
+
+def ProfileWithPseudocounts(Motifs):
+    t = len(Motifs)
+    k = len(Motifs[0])
+    profile = {}
+    count = CountWithPseudocounts(Motifs)
+    for symbol in "ACGT":
+        profile[symbol] = []
+        for j in range(k):
+            profile[symbol].append(count[symbol][j]/(t+4))
+    return profile
+
+def Consensus(Motifs):
+    k = len(Motifs[0])
+    count = CountWithPseudocounts(Motifs)
+    consensus = ""
+    for j in range(k):
+        m = 0
+        frequentSymbol = ""
+        for symbol in "AGCT":
+            if count[symbol][j] > m:
+                m = count[symbol][j]
+                frequentSymbol = symbol
+        consensus += frequentSymbol
+    return consensus
+# Then copy your ProfileMostProbablePattern(Text, k, Profile) and Pr(Text, Profile) functions here.
+
+def Pr(Text, profile):
+    p = 1
+    for i in range(len(Text)):
+        p *= profile[Text[i]][i]
+    return p
+
+def ProfileMostProbablePattern(Text, k, Profile):
+    most_prob = Text[0:k] 
+    p_max = Pr(Text[0:k], Profile)
+    for i in range(1, len(Text) - k + 1):
+         if Pr(Text[i:i+k], Profile) > p_max:
+                p_max = Pr(Text[i:i+k], Profile)
+                most_prob = Text[i:i+k]        
+    return most_prob
+
+# Copy all needed subroutines here.  These subroutines are the same used by GreedyMotifSearch(),
+# except that you should replace Count(Motifs) and Profile(Motifs) with the new functions
+# CountWithPseudocounts(Motifs) and ProfileWithPseudocounts(Motifs).
